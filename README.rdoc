@@ -1,28 +1,12 @@
-== README
+Going to use memcache as the hotcache, DB for cold. Expiration will be
+straightforward.
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+install with `brew install memcached` or whatever you prefer
 
-Things you may want to cover:
+The app assumes memcache is already running
 
-* Ruby version
+Any need for DB transactions?
 
-* System dependencies
+Add a task for warming a cold cache from DB
 
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
-
-
-Please feel free to use a different markup language if you do not plan to run
-<tt>rake doc:app</tt>.
+Switch to pgsql
