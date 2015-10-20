@@ -1,21 +1,33 @@
-# require 'dalli'
-# options = { :namespace => "app_v1", :compress => true }
-# dc = Dalli::Client.new('localhost:11211', options)
-# dc.set('abc', 123)
-# value = dc.get('abc')
-
-
 class ChatController < ApplicationController
   def create
-    # write to DB
-    # write to memcache
+    head :bad_request and return if params[:username].nil?
+    head :bad_request and return if params[:text].nil?
+    
+    username = params[:username]
+    text = params[:text]
+    timeout = params[:timeout].to_i || 60
+    expiration_date = Time.now + timeout.seconds
+    
+    # move this into an after-create
+    message = Message.create username: username, 
+      text: text, 
+      expiration_date: expiration_date
+    HotStorage.store_message(message, timeout)
+    
+    render json: { id: message.id }, status: :created
   end
   
   def show
-    # load from DB
+    message = Message.find(params[:id])
+    
+    render json: MessagePresenter.new(message)
   end
   
+  # Messages are written into hot storage as strings, so we just need to render
   def show_all
-    # load from memcache
+    head :bad_request and return if params[:username].nil?
+    username = params[:username]
+    
+    render json: HotStorage.get_messages_for(username)
   end
 end

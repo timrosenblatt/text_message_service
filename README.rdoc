@@ -10,3 +10,7 @@ Any need for DB transactions?
 Add a task for warming a cold cache from DB
 
 Switch to pgsql
+
+Switch to redis if we're expecting massive messages or large volumes
+
+Memcache connection pool so we don't have to re-initialize every time.
