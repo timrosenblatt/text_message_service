@@ -1,33 +1,33 @@
 class ChatController < ApplicationController
+  # This is being created as a public API, no authorization of _any_ kind
+  skip_before_action :verify_authenticity_token
+  
   def create
     head :bad_request and return if params[:username].nil?
     head :bad_request and return if params[:text].nil?
     
     username = params[:username]
     text = params[:text]
-    timeout = params[:timeout].to_i || 60
-    expiration_date = Time.now + timeout.seconds
+    timeout = params[:timeout].to_i unless params[:timeout].nil?
     
-    # move this into an after-create
-    message = Message.create username: username, 
-      text: text, 
-      expiration_date: expiration_date
-    HotStorage.store_message(message, timeout)
+    message = Message.create username: username, text: text, timeout: timeout
     
     render json: { id: message.id }, status: :created
   end
   
   def show
+    id = params[:id].to_i
+    head :bad_request and return unless id != 0
     message = Message.find(params[:id])
     
     render json: MessagePresenter.new(message)
+  rescue ActiveRecord::RecordNotFound
+    head :not_found and return
   end
   
-  # Messages are written into hot storage as strings, so we just need to render
   def show_all
     head :bad_request and return if params[:username].nil?
-    username = params[:username]
     
-    render json: HotStorage.get_messages_for(username)
+    render json: HotStorage.get_messages_for(params[:username])
   end
 end

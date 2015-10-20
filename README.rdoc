@@ -1,16 +1,14 @@
-Going to use memcache as the hotcache, DB for cold. Expiration will be
-straightforward.
+Going to use memcache as the hotcache, DB for cold. Expiration will be handled by memcache's standard cache expiration
 
-install with `brew install memcached` or whatever you prefer
+Install with `brew install memcached` or whatever you prefer
 
-The app assumes memcache is already running
+For testing, the app looks for memcache running on localhost:11211, the default of `memcached -d`, but you can configure however you want in /config/environments/
 
-Any need for DB transactions?
+The implementation of this service would change slightly depending on the load. There are some edge cases where a very high volume of writes could overload the message index in Memcache, or frequent reads of a user's unread messages by multiple processes could result in a message being delivered twice.
 
-Add a task for warming a cold cache from DB
+One of the requirements for this service is that hot and cold storage be separate. I think memcache and a DB meets this. Another option would be to put all this in a DB but in two tables. The table for cold storage can be write-only and can be optimized for a huge volume of storage, and the hot can be kept as small as possible for performance. This would help manage some of the synchronization issues, since we can use transactions.
 
-Switch to pgsql
-
-Switch to redis if we're expecting massive messages or large volumes
-
-Memcache connection pool so we don't have to re-initialize every time.
+TODO:
+* Add a task for warming a cold cache from DB, search for unexpired DB entries and cache them
+* Database should be switched to pgsql
+* Use memcache connection pool
