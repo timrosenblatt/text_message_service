@@ -1,6 +1,5 @@
 class Message < ActiveRecord::Base
   before_save :set_expiration_date
-  after_create :put_in_hot_storage
   
   attr_accessor :timeout
   
@@ -10,10 +9,6 @@ class Message < ActiveRecord::Base
     end
       
     self.expiration_date = Time.now + timeout
-  end
-
-  def put_in_hot_storage
-    HotStorage.store_message(self)
   end
   
   def self.default_timeout

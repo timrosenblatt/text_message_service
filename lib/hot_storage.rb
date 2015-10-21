@@ -34,7 +34,6 @@ module HotStorage
     all_messages
   end
 
-  
   # By reading the index, it is destroyed, as a requirement of the system
   def self.fetch_and_clear_index!(username)
     messages_index = ''

@@ -67,7 +67,13 @@ RSpec.describe ChatController, :type => :controller do
   
   context 'returning all messages for a user' do
     it 'works' do
-      messages = create_list :message, 3, username: 'timrosenblatt'
+      messages = []
+      params = attributes_for :message, username: 'timrosenblatt'
+      messages << CreateMessageInteractor.create_message(params)
+      params = attributes_for :message, username: 'timrosenblatt'
+      messages << CreateMessageInteractor.create_message(params)
+      params = attributes_for :message, username: 'timrosenblatt'
+      messages << CreateMessageInteractor.create_message(params)
     
       get :show_all, username: 'timrosenblatt'
     
@@ -75,7 +81,7 @@ RSpec.describe ChatController, :type => :controller do
     
       expect(response).to have_http_status(:ok)
       expect(parsed_response).to be_a(Array)
-      expect(parsed_response.size).to be(3)
+      expect(parsed_response.size).to eq(3)
       expect(parsed_response[0]['username']).to eq('timrosenblatt')
       expect(parsed_response[1]['username']).to eq('timrosenblatt')
       expect(parsed_response[2]['username']).to eq('timrosenblatt')

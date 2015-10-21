@@ -3,12 +3,17 @@ require 'rails_helper'
 RSpec.describe HotStorage do
   it 'stores message' do
     m = create :message
+    
+    HotStorage.store_message(m)
+    
     expect(HotStorage.connection.get(m.id)).to eq(MessagePresenter.new(m).as_json)
   end
   
   it 'expires messages automatically' do
     m = create :message, timeout: 1
+    HotStorage.store_message(m)
     sleep(1)
+    
     expect(HotStorage.connection.get(m.id)).to be_nil
   end
   

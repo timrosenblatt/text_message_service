@@ -10,7 +10,9 @@ class ChatController < ApplicationController
     text = params[:text]
     timeout = params[:timeout].to_i unless params[:timeout].nil?
     
-    message = Message.create username: username, text: text, timeout: timeout
+    message = CreateMessageInteractor.create_message username: username, 
+      text: text, 
+      timeout: timeout
     
     render json: { id: message.id }, status: :created
   end
