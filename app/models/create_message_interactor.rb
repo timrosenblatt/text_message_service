@@ -1,3 +1,4 @@
+# TODO handle failure cases
 class CreateMessageInteractor
   def self.create_message(params)
     message = Message.create params

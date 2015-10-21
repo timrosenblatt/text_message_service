@@ -1,3 +1,4 @@
+# TODO add validations in model
 class Message < ActiveRecord::Base
   before_save :set_expiration_date
   
