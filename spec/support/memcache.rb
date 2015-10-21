@@ -1,9 +1,7 @@
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
   
-  config.before(:suite) do
-    begin
-      HotStorage.connection.flush_all
-    end
+  config.before(:each) do
+    HotStorage.send(:connection).flush_all
   end
 end

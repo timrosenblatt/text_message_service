@@ -1,10 +1,15 @@
-Going to use memcache as the hotcache, DB for cold. Expiration will be handled by memcache's standard cache expiration
+=====main question about the spec====
+There's some slight differences in the spec with respect to what attributes should be in the message response. I implemented a merged version, but would like to confirm it.
+
+Using memcache as the hotcache, DB for cold. Expiration will be handled by memcache's standard cache expiration
 
 Install with `brew install memcached` or whatever you prefer
 
 For testing, the app looks for memcache running on localhost:11211, the default of `memcached -d`, but you can configure however you want in /config/environments/
 
 The implementation of this service would change slightly depending on the load. There are some edge cases where a very high volume of writes could overload the message index in Memcache, or frequent reads of a user's unread messages by multiple processes could result in a message being delivered twice.
+
+Switching to a different engine for HotStorage would be better, something with more atomic commands or transactions. Redis, any SQL DB, etc.
 
 One of the requirements for this service is that hot and cold storage be separate. I think memcache and a DB meets this. Another option would be to put all this in a DB but in two tables. The table for cold storage can be write-only and can be optimized for a huge volume of storage, and the hot can be kept as small as possible for performance. This would help manage some of the synchronization issues, since we can use transactions.
 
