@@ -26,7 +26,7 @@ module HotStorage
     end
   end
   
-  def self.get_multiple_keys(all_ids)
+  def self.get_multiple_keys(all_ids)    
     all_messages = []
     connection.get_multi(*all_ids) do |key, value|
       all_messages << value
@@ -42,11 +42,11 @@ module HotStorage
     # the messages will be deleted later anyways, so the modification will 
     # mean that the un-deleted message will be returned ok
     connection.cas(username) do |value|
-      messages_index = value
+      messages_index = value.to_s
       '' # replace the index with a blank value
     end
     
-    messages_index.split('|').compact
+    messages_index.split('|').reject{ |m| m.empty? }
   end
   
   def self.store_message_contents(message)
